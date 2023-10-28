@@ -6,6 +6,9 @@ HEIGHT = 600
 WHITE = (255,255,255)
 GREEN = (0,255,0)
 
+
+
+
 # 游戏初始化
 pygame.init()
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
