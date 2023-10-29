@@ -1,11 +1,12 @@
 import pygame
+import random
 
 FPS = 60
 WIDTH = 500
 HEIGHT = 600
 WHITE = (255,255,255)
 GREEN = (0,255,0)
-
+RED = (255,0,0)
 
 
 
@@ -35,13 +36,47 @@ class Player(pygame.sprite.Sprite):
             self.rect.x -= self.speedx 
         
         
-        if self.rect.left > WIDTH:
-                self.rect.x = 0
+        if self.rect.right > WIDTH:
+                self.rect.right = WIDTH
+                
+        if self.rect.left  < 0:
+                self.rect.left = 0 
+                    
+class Rock(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((30,30))
+        self.image.fill(RED)
         
- 
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randrange(0,WIDTH - self.rect.width)
+        self.rect.y = random.randrange(-100,-40)
+        
+        self.speedy = random.randrange(2,10)
+        self.speedx = random.randrange(-3,3)
+        
+    
+    def update(self):
+        self.rect.y += self.speedy
+        self.rect.x += self.speedx
+        if self.rect.top > HEIGHT or self.rect.left > WIDTH or self.rect.right < 0: 
+            self.rect.x = random.randrange(0,WIDTH - self.rect.width)
+            self.rect.y =random.randrange(-100,-40)
+        
+            self.speedy = random.randrange(2,10)
+            self.speedx = random.randrange(-3,3)
+        
+       
 all_sprites = pygame.sprite.Group()      
 player = Player() #实体化类
 all_sprites.add(player)
+for i in range(8):
+  rock = Rock()
+  all_sprites.add(rock)
+
+
+
+
 
 running = True
 while running:
