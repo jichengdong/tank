@@ -6,7 +6,13 @@ WIDTH = 500
 HEIGHT = 600
 WHITE = (255,255,255)
 GREEN = (0,255,0)
-RED = (255,0,0)
+RED = (255,0,0) 
+YELLOW = (255,255,0) 
+
+
+
+
+ 
 
 # 最新版 2023 10 19号 
 
@@ -41,6 +47,33 @@ class Player(pygame.sprite.Sprite):
                 
         if self.rect.left  < 0:
                 self.rect.left = 0 
+                
+    def shoot(self):
+        bullet = Bullet(self.rect.centerx,self.rect.centery)
+        all_sprites.add(bullet)       
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((10,20))
+        self.image.fill(YELLOW)
+        
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        
+        self.speedy = -10
+       
+        
+    
+    def update(self):
+        self.rect.y += self.speedy
+       
+        if self.rect.bottom < 0:
+            self.kill()
+       
+
+                    
+
                     
 class Rock(pygame.sprite.Sprite):
     def __init__(self):
@@ -84,6 +117,13 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.KEYDOWN:
+             if event.key == pygame.K_SPACE:   
+                 player.shoot()
+            
+            
+            
+        
         #更新游戏    
         all_sprites.update()
         #显示画面
