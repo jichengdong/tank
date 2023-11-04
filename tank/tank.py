@@ -1,6 +1,5 @@
 import pygame
 import random
-
 FPS = 60
 WIDTH = 500
 HEIGHT = 600
@@ -8,7 +7,7 @@ WHITE = (255,255,255)
 GREEN = (0,255,0)
 RED = (255,0,0) 
 YELLOW = (255,255,0) 
-
+BLACK = (0,0,0)
 
 
 
@@ -46,11 +45,13 @@ class Player(pygame.sprite.Sprite):
                 self.rect.right = WIDTH
                 
         if self.rect.left  < 0:
-                self.rect.left = 0 
+                self.rect.left = 0
+                
                 
     def shoot(self):
         bullet = Bullet(self.rect.centerx,self.rect.centery)
-        all_sprites.add(bullet)       
+        all_sprites.add(bullet)
+        bullets.add(bullet)        
 class Bullet(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
@@ -67,7 +68,6 @@ class Bullet(pygame.sprite.Sprite):
     
     def update(self):
         self.rect.y += self.speedy
-       
         if self.rect.bottom < 0:
             self.kill()
        
@@ -84,7 +84,6 @@ class Rock(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(0,WIDTH - self.rect.width)
         self.rect.y = random.randrange(-100,-40)
-        
         self.speedy = random.randrange(2,10)
         self.speedx = random.randrange(-3,3)
         
@@ -100,12 +99,16 @@ class Rock(pygame.sprite.Sprite):
             self.speedx = random.randrange(-3,3)
         
        
-all_sprites = pygame.sprite.Group()      
+all_sprites = pygame.sprite.Group() 
+rocks = pygame.sprite.Group() 
+bullets = pygame.sprite.Group() 
 player = Player() #实体化类
 all_sprites.add(player)
 for i in range(8):
   rock = Rock()
   all_sprites.add(rock)
+  rocks.add(rock)
+  
 
 
 
@@ -120,14 +123,21 @@ while running:
         elif event.type == pygame.KEYDOWN:
              if event.key == pygame.K_SPACE:   
                  player.shoot()
-            
-            
-            
-        
         #更新游戏    
         all_sprites.update()
+        
+        hits_rockandbullets =  pygame.sprite.groupcollide(rocks,bullets,True,True)
+        for hit in  hits_rockandbullets:
+            r = Rock()
+            all_sprites.add(r)
+            rocks.add(r)
+            
+            hits_rockandbullets =  pygame.sprite.spritecollide(player,rocks,True,False)
+            if hits_rockandbullets:
+               running = False
+            
         #显示画面
-        screen.fill(WHITE)
+        screen.fill(BLACK)
         all_sprites.draw(screen)
         pygame.display.update()
 pygame.quit()
