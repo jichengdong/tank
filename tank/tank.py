@@ -1,5 +1,7 @@
 import pygame
 import random
+import os
+
 FPS = 60
 WIDTH = 500
 HEIGHT = 600
@@ -132,7 +134,7 @@ while running:
             all_sprites.add(r)
             rocks.add(r)
             
-            hits_rockandbullets =  pygame.sprite.spritecollide(player,rocks,True,False)
+            hits_rockandbullets =   
             if hits_rockandbullets:
                running = False
             
