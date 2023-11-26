@@ -69,7 +69,7 @@ pygame.mixer.music.load(os.path.join(folder,"sound","background.ogg"))
 pygame.mixer.music.set_volume(0.2)
 
 #font_name = pygame.font.match_font('arial')
-font_name = 'font.ttf'
+font_name = os.path.join(folder,'font.ttf')
 
 def draw_text(surf,text,size,x,y):
     font = pygame.font.Font(font_name,size)
