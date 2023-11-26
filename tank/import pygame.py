@@ -1,6 +1,7 @@
 import pygame
 import random
 import os
+import pathlib
 
 FPS = 60
 WIDTH = 500
@@ -19,46 +20,52 @@ pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH,HEIGHT))
 pygame.display.set_caption('飞机大战')
 clock = pygame.time.Clock()
-backgroud_img = pygame.image.load(os.path.join("img","background.png")).convert()
-player_img =  pygame.image.load( os.path.join("img", "player.png")).convert()
+
+folder = pathlib.Path(__file__).parent.resolve()
+
+backgroud_img = pygame.image.load(os.path.join(folder,"img","background.png")).convert()
+player_img =  pygame.image.load( os.path.join(folder,"img", "player.png")).convert()
 player_mini_img = pygame.transform.scale(player_img,(25,20))
-player_mini_img.set_colorkey(BLACK)  
-rock_ing = pygame.image.load(os.path.join("img", "rock.png")).convert()
+player_mini_img.set_colorkey(BLACK)
+
+pygame.display.set_icon(player_mini_img)  
+
+rock_ing = pygame.image.load(os.path.join(folder,"img", "rock.png")).convert()
     
-bullet_img = pygame.image.load( os.path.join("img","bullet.png")).convert()
+bullet_img = pygame.image.load( os.path.join(folder,"img","bullet.png")).convert()
 rock_images = []
 for i in range(7):
-    rock_images.append(pygame.image.load(os.path.join("img",f"rock{i}.png")).convert())
+    rock_images.append(pygame.image.load(os.path.join(folder,"img",f"rock{i}.png")).convert())
 
 expl_anim = {}
 expl_anim['lg'] = []
 expl_anim['sm'] = []
 expl_anim['player'] = []
 for i in range(9):
-    expl_img = pygame.image.load(os.path.join("img",f"expl{i}.png")).convert()       
+    expl_img = pygame.image.load(os.path.join(folder,"img",f"expl{i}.png")).convert()       
     expl_img.set_colorkey(BLACK)
     expl_anim['lg'].append(pygame.transform.scale(expl_img,(75,75)))
     expl_anim['sm'].append(pygame.transform.scale(expl_img,(30,30)))
-    player_expl_img = pygame.image.load(os.path.join("img",f"player_expl{i}.png")).convert() 
+    player_expl_img = pygame.image.load(os.path.join(folder,"img",f"player_expl{i}.png")).convert() 
     player_expl_img.set_colorkey(BLACK)
     expl_anim['player'].append(player_expl_img)
     
 power_imgs = {} 
-power_imgs['shield'] = pygame.image.load(os.path.join("img", "shield.png")).convert()
-power_imgs['gun'] = pygame.image.load(os.path.join("img", "gun.png")).convert()
+power_imgs['shield'] = pygame.image.load(os.path.join(folder,"img", "shield.png")).convert()
+power_imgs['gun'] = pygame.image.load(os.path.join(folder,"img", "gun.png")).convert()
 
    
    
-shoot_sound = pygame.mixer.Sound(os.path.join("sound","shoot.wav"))
+shoot_sound = pygame.mixer.Sound(os.path.join(folder,"sound","shoot.wav"))
 expl_souds = [
-    pygame.mixer.Sound(os.path.join("sound","expl0.wav")),
-    pygame.mixer.Sound(os.path.join("sound","expl1.wav"))
+    pygame.mixer.Sound(os.path.join(folder,"sound","expl0.wav")),
+    pygame.mixer.Sound(os.path.join(folder,"sound","expl1.wav"))
 ]
-die_sound = pygame.mixer.Sound(os.path.join("sound","rumble.ogg"))
-shield_sound = pygame.mixer.Sound(os.path.join("sound","pow0.wav"))
-gun_sound = pygame.mixer.Sound(os.path.join("sound","pow1.wav"))
+die_sound = pygame.mixer.Sound(os.path.join(folder,"sound","rumble.ogg"))
+shield_sound = pygame.mixer.Sound(os.path.join(folder,"sound","pow0.wav"))
+gun_sound = pygame.mixer.Sound(os.path.join(folder,"sound","pow1.wav"))
 
-pygame.mixer.music.load(os.path.join("sound","background.ogg"))
+pygame.mixer.music.load(os.path.join(folder,"sound","background.ogg"))
 pygame.mixer.music.set_volume(0.2)
 
 #font_name = pygame.font.match_font('arial')
@@ -96,6 +103,7 @@ def new_rock():
     rocks.add(rock)      
 
 def draw_init():
+    screen.blit(backgroud_img,(0,0))
     draw_text(screen,'飞机大战',62,WIDTH/2,HEIGHT/4)
     draw_text(screen,'左右键移动飞机，空格键发射子弹',22,WIDTH/2,HEIGHT/2)
     draw_text(screen,'任意键开始',18,WIDTH/2,HEIGHT*3/4)
@@ -106,8 +114,10 @@ def draw_init():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+                return True
             elif event.type == pygame.KEYUP:
                 Warning = False
+                return False
                 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -291,18 +301,21 @@ show_init = True
 running = True
 while running:
     if show_init:
-        draw_init()
+        close = draw_init()
+        if close:
+            break
         show_init = False
-    all_sprites = pygame.sprite.Group() 
-    rocks = pygame.sprite.Group() 
-    powers = pygame.sprite.Group() 
-    bullets = pygame.sprite.Group() 
-    player = Player() #实体化类
-    all_sprites.add(player)
-    score = 0
-    pygame.mixer.music.play(-1)
-    for i in range(8):
-       new_rock()
+        
+        all_sprites = pygame.sprite.Group() 
+        rocks = pygame.sprite.Group() 
+        powers = pygame.sprite.Group() 
+        bullets = pygame.sprite.Group() 
+        player = Player() #实体化类
+        all_sprites.add(player)
+        score = 0
+        pygame.mixer.music.play(-1)
+        for i in range(8):
+            new_rock()
     clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
